@@ -1,17 +1,17 @@
 ﻿using SFML.Graphics;
-using SFML.System;
 using System;
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Arcanoid
 {
-    internal class Block
+    internal class Stick
     {
         public Sprite sprite;
 
-        private int breakCount;
-
-        public Block(Texture texture)
+        public Stick(Texture texture)
         {
             sprite = new Sprite(texture);
         }

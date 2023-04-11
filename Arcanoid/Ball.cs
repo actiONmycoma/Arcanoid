@@ -1,5 +1,4 @@
 ﻿using SFML.Graphics;
-using SFML.Window;
 using SFML.System;
 using System;
 
@@ -43,27 +42,25 @@ namespace Arcanoid
 
         }
 
-        public bool CheckCollision(Sprite sprite, string tag)
+        public void CheckCollision(Stick stick)
         {
-            if (this.sprite.GetGlobalBounds().Intersects(sprite.GetGlobalBounds()) == true)
+            if (this.sprite.GetGlobalBounds().Intersects(stick.sprite.GetGlobalBounds()) == true)
             {
-                if (tag == "stick")
-                {
-                    direction.Y = -1;
+                direction.Y = -1;
 
-                    float f = ((this.sprite.Position.X + this.sprite.Texture.Size.X * 0.5f) -
-                        (sprite.Position.X + sprite.Texture.Size.X * 0.5f)) / sprite.Texture.Size.X;
+                float f = ((this.sprite.Position.X + this.sprite.Texture.Size.X * 0.5f) -
+                    (stick.sprite.Position.X + stick.sprite.Texture.Size.X * 0.5f)) / stick.sprite.Texture.Size.X;
 
-                    direction.X = f * 2;
+                direction.X = f * 2;
 
-                }
+            }
+        }
 
-                if (tag == "block")
-                {
-                    direction.Y *= -1;
-
-                }
-
+        public bool CheckCollision(Block block)
+        {
+            if (this.sprite.GetGlobalBounds().Intersects(block.sprite.GetGlobalBounds()) == true)
+            {
+                direction.Y *= -1;
 
                 return true;
             }
