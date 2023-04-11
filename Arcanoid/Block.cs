@@ -9,9 +9,27 @@ namespace Arcanoid
         private int breakCount;
         private bool isVisible;
 
-        public Block(Texture texture)
+        public Block(int breakCount)
+        {
+            this.breakCount = breakCount;
+            isVisible = true;
+        }
+        public void SetSprite(Texture texture)
         {
             sprite = new Sprite(texture);
+        }
+
+        public void ChangeVisibility() 
+        {
+            if (isVisible) 
+                isVisible = false;
+            else
+                isVisible = true;
+        }
+
+        public int GetBreakCount()
+        {
+            return breakCount;
         }
     }
 }
