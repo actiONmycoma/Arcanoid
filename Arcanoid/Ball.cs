@@ -15,12 +15,17 @@ namespace Arcanoid
             sprite = new Sprite(texture);
         }
 
-        public void start(float speed, Vector2f direction)
+        public void Start(float speed, Vector2f direction)
         {
             if (this.speed != 0) return;
 
             this.speed = speed;
             this.direction = direction;
+        }
+
+        public void ChangeSpeed(float speed)
+        {
+            this.speed = speed;
         }
 
         public void Move(Vector2i boundsPosition, Vector2i boundsSize)
@@ -57,7 +62,8 @@ namespace Arcanoid
 
         public bool CheckCollision(Block block)
         {
-            if (this.sprite.GetGlobalBounds().Intersects(block.sprite.GetGlobalBounds()) == true)
+            if (this.sprite.GetGlobalBounds().Intersects(block.sprite.GetGlobalBounds()) == true
+                && block.GetVisible())
             {
                 direction.Y *= -1;
 

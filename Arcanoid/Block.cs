@@ -14,6 +14,7 @@ namespace Arcanoid
             this.breakCount = breakCount;
             isVisible = true;
         }
+
         public void SetSprite(Texture texture)
         {
             sprite = new Sprite(texture);
@@ -30,6 +31,11 @@ namespace Arcanoid
         public int GetBreakCount()
         {
             return breakCount;
+        }
+
+        public bool GetVisible()
+        {
+           return isVisible;
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Arcanoid
             InitBlocks();
             SetBlocksSprite();
 
-            SetStartPosition();
+            SetNewGameStartPosition();
 
             int lifeCount = 3;
             int level = 0;
@@ -60,17 +60,26 @@ namespace Arcanoid
 
                 window.DispatchEvents();
 
-                if (Mouse.IsButtonPressed(Mouse.Button.Left) == true) ball.start(5, new Vector2f(0, -1));
+                if (Mouse.IsButtonPressed(Mouse.Button.Left) == true) ball.Start(5, new Vector2f(0, -1));
 
                 ball.Move(new Vector2i(0, (int)levelText.CharacterSize), new Vector2i((int)window.Size.X, (int)window.Size.Y));
+
                 ball.CheckCollision(stick);
 
+                for (int i = 0; i < blocks.GetLength(0); i++)
+                {
+                    for (int j = 0; j < blocks.GetLength(1); j++)
+                    {
+                        if (ball.CheckCollision(blocks[i, j])) blocks[i, j].ChangeVisibility();
+                    }
+                }
+
                 stick.sprite.Position = new Vector2f(Mouse.GetPosition(window).X -
-                    stick.sprite.TextureRect.Width * 0.5f, stick.sprite.Position.Y);
+                    stick.sprite.TextureRect.Width * 0.5f, stick.sprite.Position.Y);//на заметке
 
                 if (ball.sprite.Position.Y > 600)
                 {
-                    lifeCount--;                    
+                    lifeCount--;
                 }
 
 
@@ -79,6 +88,14 @@ namespace Arcanoid
                 for (int i = 0; i < lifeCount; i++)
                 {
                     window.Draw(lifeSprites[i]);
+                }
+
+                for (int i = 0; i < blocks.GetLength(0); i++)
+                {
+                    for (int j = 0; j < blocks.GetLength(1); j++)
+                    {
+                        if (blocks[i, j].GetVisible()) window.Draw(blocks[i, j].sprite);
+                    }
                 }
 
                 window.Draw(stick.sprite);
@@ -93,9 +110,10 @@ namespace Arcanoid
         {
             window.Close();
         }
+
         private static void InitBlocks(int level = 0)
         {
-            blocks = new Block[10,10];
+            blocks = new Block[10, 10];
 
             int breakCount;
 
@@ -105,15 +123,15 @@ namespace Arcanoid
                     breakCount = 2;
                 else
                     breakCount = 1;
-                
+
                 for (int j = 0; j < blocks.GetLength(1); j++)
                 {
-                    blocks[i, j] = new Block(breakCount);                    
+                    blocks[i, j] = new Block(breakCount);
                 }
             }
-        }        
+        }
 
-        private static void SetBlocksSprite(/*Texture block, Texture strongBlock*/)
+        private static void SetBlocksSprite()
         {
             for (int i = 0; i < blocks.GetLength(0); i++)
             {
@@ -123,14 +141,20 @@ namespace Arcanoid
 
                     if (breakCount == 1) blocks[i, j].SetSprite(blockTexture);
                     if (breakCount == 2) blocks[i, j].SetSprite(strongBlockTexture);
+
+                    Vector2f vector = new Vector2f(10 + blocks[i, j].sprite.Texture.Size.X * (j + 1) + 20 * j,
+                         70 + i * blocks[i, j].sprite.Texture.Size.Y + i * 20);
+
+                    blocks[i, j].sprite.Position = vector;
                 }
             }
         }
-        private static void SetStartPosition()
+
+        private static void SetNewGameStartPosition()
         {
             stick.sprite.Position = new Vector2f(400 - stick.sprite.TextureRect.Width * 0.5f, 550);
-            ball.sprite.Position = new Vector2f(400, 400);            
+            ball.sprite.Position = new Vector2f(400, 400);
         }
-                
+
     }
 }
