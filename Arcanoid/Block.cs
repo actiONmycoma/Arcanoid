@@ -1,7 +1,4 @@
 ﻿using SFML.Graphics;
-using SFML.System;
-using System;
-
 
 namespace Arcanoid
 {
@@ -10,6 +7,7 @@ namespace Arcanoid
         public Sprite sprite;
 
         private int breakCount;
+        private bool isVisible;
 
         public Block(Texture texture)
         {
