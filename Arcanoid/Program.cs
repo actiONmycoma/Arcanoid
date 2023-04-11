@@ -41,21 +41,21 @@ namespace Arcanoid
                 window.Clear();
 
                 window.DispatchEvents();
-                                
+
 
                 if (Mouse.IsButtonPressed(Mouse.Button.Left) == true)
                 {
                     ball.start(5, new Vector2f(0, -1));
                 }
-                                
 
-                ball.Move(new Vector2i(0,0),new Vector2i((int)window.Size.X, (int)window.Size.Y));
-                ball.CheckCollision(stick);
+
+                ball.Move(new Vector2i(0, 0), new Vector2i((int)window.Size.X, (int)window.Size.Y));
+                ball.CheckCollision(stick, "stick");
 
                 stick.Position = new Vector2f(Mouse.GetPosition(window).X - stick.TextureRect.Width * 0.5f,
                     stick.Position.Y);
 
-                
+
 
                 window.Draw(stick);
                 window.Draw(ball.sprite);

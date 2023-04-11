@@ -43,12 +43,27 @@ namespace Arcanoid
 
         }
 
-        public bool CheckCollision(Sprite sprite)
+        public bool CheckCollision(Sprite sprite, string tag)
         {
             if (this.sprite.GetGlobalBounds().Intersects(sprite.GetGlobalBounds()) == true)
             {
-                direction.Y *= -1;
-                direction.X *= -1;
+                if (tag == "stick")
+                {
+                    direction.Y = -1;
+
+                    float f = ((this.sprite.Position.X + this.sprite.Texture.Size.X * 0.5f) -
+                        (sprite.Position.X + sprite.Texture.Size.X * 0.5f)) / sprite.Texture.Size.X;
+
+                    direction.X = f * 2;
+
+                }
+
+                if (tag == "block")
+                {
+                    direction.Y *= -1;
+
+                }
+
 
                 return true;
             }
