@@ -60,10 +60,15 @@ namespace Arcanoid
 
                 window.DispatchEvents();
 
+                if (ball.GetSpeed() == 0)
+                {
+                    SetBallStartPosition();
+                }
+
                 if (Mouse.IsButtonPressed(Mouse.Button.Left) == true) ball.Start(5, new Vector2f(0, -1));
 
                 ball.Move(new Vector2i(0, (int)levelText.CharacterSize), new Vector2i((int)window.Size.X, (int)window.Size.Y));
-                
+
                 stick.Move(window);
 
                 ball.CheckCollision(stick);
@@ -80,6 +85,8 @@ namespace Arcanoid
                 if (ball.sprite.Position.Y > 600)
                 {
                     lifeCount--;
+                    ball.ChangeSpeed(0);
+                    SetBallStartPosition();
                 }
 
                 //draw
@@ -153,8 +160,15 @@ namespace Arcanoid
         private static void SetNewGameStartPosition()
         {
             stick.sprite.Position = new Vector2f(400 - stick.sprite.TextureRect.Width * 0.5f, 550);
-            ball.sprite.Position = new Vector2f(400, 400);
+            SetBallStartPosition();
         }
 
+        private static void SetBallStartPosition()
+        {
+            Vector2f position = new Vector2f(stick.sprite.Position.X + stick.sprite.Texture.Size.X * 0.5f -
+                ball.sprite.Texture.Size.X * 0.5f, stick.sprite.Position.Y - ball.sprite.Texture.Size.Y);
+
+            ball.sprite.Position = position;
+        }
     }
 }

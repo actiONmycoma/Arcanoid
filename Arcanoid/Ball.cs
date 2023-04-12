@@ -28,6 +28,11 @@ namespace Arcanoid
             this.speed = speed;
         }
 
+        public float GetSpeed()
+        {
+            return speed;
+        }
+
         public void Move(Vector2i boundsPosition, Vector2i boundsSize)
         {
 
