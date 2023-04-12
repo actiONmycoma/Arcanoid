@@ -1,4 +1,5 @@
 ﻿using SFML.Graphics;
+using SFML.System;
 
 namespace Arcanoid
 {
@@ -12,30 +13,38 @@ namespace Arcanoid
         public Block(int breakCount)
         {
             this.breakCount = breakCount;
-            isVisible = true;
+            this.isVisible = true;
         }
 
         public void SetSprite(Texture texture)
         {
-            sprite = new Sprite(texture);
+            this.sprite = new Sprite(texture);
         }
 
         public void ChangeVisibility() 
         {
-            if (isVisible) 
-                isVisible = false;
+            if (this.isVisible) 
+                this.isVisible = false;
             else
-                isVisible = true;
+                this.isVisible = true;
+        }
+
+        public void Update(Texture texture)
+        {
+            Vector2f position = this.sprite.Position;
+            this.sprite = new Sprite(texture);
+            this.sprite.Position = position;
+            this.breakCount--;
         }
 
         public int GetBreakCount()
         {
-            return breakCount;
+            return this.breakCount;
         }
 
         public bool GetVisible()
         {
-           return isVisible;
+           return this.isVisible;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace Arcanoid
             stick = new Stick(stickTexture);
             ball = new Ball(ballTexture);
 
-            InitBlocks();
+            InitBlocks(10);
             SetBlocksSprite();
 
             SetNewGameStartPosition();
@@ -60,24 +60,50 @@ namespace Arcanoid
 
                 window.DispatchEvents();
 
+                if (IsLevelClear() == true)
+                {
+                    InitBlocks(++level);
+                    SetBlocksSprite();
+
+                    SetNewGameStartPosition();
+                }
+
                 if (ball.GetSpeed() == 0)
                 {
                     SetBallStartPosition();
                 }
 
-                if (Mouse.IsButtonPressed(Mouse.Button.Left) == true) ball.Start(5, new Vector2f(0, -1));
+                if (Mouse.IsButtonPressed(Mouse.Button.Left)) ball.Start(5, new Vector2f(0, -1));
 
                 ball.Move(new Vector2i(0, (int)levelText.CharacterSize), new Vector2i((int)window.Size.X, (int)window.Size.Y));
 
                 stick.Move(window);
 
-                ball.CheckCollision(stick);
+                if (ball.CheckCollision(stick))
+                {
+                    float f = ((ball.sprite.Position.X + ball.sprite.Texture.Size.X * 0.5f) -
+                   (stick.sprite.Position.X + stick.sprite.Texture.Size.X * 0.5f)) / stick.sprite.Texture.Size.X;
+
+                    ball.ChangeDirection(new Vector2f(f * 2, -1));
+                }
 
                 for (int i = 0; i < blocks.GetLength(0); i++)
                 {
                     for (int j = 0; j < blocks.GetLength(1); j++)
                     {
-                        if (ball.CheckCollision(blocks[i, j])) blocks[i, j].ChangeVisibility();
+                        if (ball.CheckCollision(blocks[i, j]))
+                        {
+                            if (blocks[i, j].GetBreakCount() == 1)
+                            {
+                                blocks[i, j].ChangeVisibility();
+                            }
+                            else
+                            {
+                                blocks[i, j].Update(blockTexture);
+                            }
+
+                            ball.ChangeDirection(new Vector2f(ball.GetDirection().X, ball.GetDirection().Y * -1));
+                        }
                     }
                 }
 
@@ -169,6 +195,19 @@ namespace Arcanoid
                 ball.sprite.Texture.Size.X * 0.5f, stick.sprite.Position.Y - ball.sprite.Texture.Size.Y);
 
             ball.sprite.Position = position;
+        }
+
+        private static bool IsLevelClear()
+        {
+            for (int i = 0; i < blocks.GetLength(0); i++)
+            {
+                for (int j = 0; j < blocks.GetLength(1); j++)
+                {
+                    if (blocks[i, j].GetVisible() == true) return false;
+                }
+            }
+
+            return true;
         }
     }
 }

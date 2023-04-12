@@ -12,7 +12,7 @@ namespace Arcanoid
 
         public Ball(Texture texture)
         {
-            sprite = new Sprite(texture);
+            this.sprite = new Sprite(texture);
         }
 
         public void Start(float speed, Vector2f direction)
@@ -28,9 +28,9 @@ namespace Arcanoid
             this.speed = speed;
         }
 
-        public float GetSpeed()
+        public void ChangeDirection(Vector2f vector)
         {
-            return speed;
+            this.direction = vector;
         }
 
         public void Move(Vector2i boundsPosition, Vector2i boundsSize)
@@ -51,31 +51,25 @@ namespace Arcanoid
 
         }
 
-        public void CheckCollision(Stick stick)
+        public bool CheckCollision(Stick stick)
         {
-            if (this.sprite.GetGlobalBounds().Intersects(stick.sprite.GetGlobalBounds()) == true)
-            {
-                direction.Y = -1;
-
-                float f = ((this.sprite.Position.X + this.sprite.Texture.Size.X * 0.5f) -
-                    (stick.sprite.Position.X + stick.sprite.Texture.Size.X * 0.5f)) / stick.sprite.Texture.Size.X;
-
-                direction.X = f * 2;
-
-            }
+            return this.sprite.GetGlobalBounds().Intersects(stick.sprite.GetGlobalBounds());
         }
 
         public bool CheckCollision(Block block)
         {
-            if (this.sprite.GetGlobalBounds().Intersects(block.sprite.GetGlobalBounds()) == true
-                && block.GetVisible())
-            {
-                direction.Y *= -1;
+            return this.sprite.GetGlobalBounds().Intersects(block.sprite.GetGlobalBounds()) 
+                && block.GetVisible();
+        }
 
-                return true;
-            }
+        public float GetSpeed()
+        {
+            return this.speed;
+        }
 
-            return false;
+        public Vector2f GetDirection()
+        {
+            return this.direction;
         }
     }
 }
