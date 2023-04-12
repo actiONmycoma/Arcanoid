@@ -2,7 +2,6 @@
 using SFML.Window;
 using SFML.System;
 using System;
-using System.Data;
 
 namespace Arcanoid
 {
@@ -15,11 +14,9 @@ namespace Arcanoid
         private static Texture blockTexture;
         private static Texture strongBlockTexture;
 
-
+        private static Ball ball;
         private static Stick stick;
         private static Block[,] blocks;
-
-        private static Ball ball;
 
         static void Main(string[] args)
         {
@@ -34,11 +31,10 @@ namespace Arcanoid
             blockTexture = new Texture("Block.png");
             strongBlockTexture = new Texture("Block2.png");
 
-
             stick = new Stick(stickTexture);
             ball = new Ball(ballTexture);
 
-            InitBlocks(10);
+            InitBlocks();
             SetBlocksSprite();
 
             SetNewGameStartPosition();
@@ -60,79 +56,56 @@ namespace Arcanoid
 
                 window.DispatchEvents();
 
-                if (IsLevelClear() == true)
+                if (IsGame(lifeCount, level))
                 {
-                    InitBlocks(++level);
-                    SetBlocksSprite();
-
-                    SetNewGameStartPosition();
-                }
-
-                if (ball.GetSpeed() == 0)
-                {
-                    SetBallStartPosition();
-                }
-
-                if (Mouse.IsButtonPressed(Mouse.Button.Left)) ball.Start(5, new Vector2f(0, -1));
-
-                ball.Move(new Vector2i(0, (int)levelText.CharacterSize), new Vector2i((int)window.Size.X, (int)window.Size.Y));
-
-                stick.Move(window);
-
-                if (ball.CheckCollision(stick))
-                {
-                    float f = ((ball.sprite.Position.X + ball.sprite.Texture.Size.X * 0.5f) -
-                   (stick.sprite.Position.X + stick.sprite.Texture.Size.X * 0.5f)) / stick.sprite.Texture.Size.X;
-
-                    ball.ChangeDirection(new Vector2f(f * 2, -1));
-                }
-
-                for (int i = 0; i < blocks.GetLength(0); i++)
-                {
-                    for (int j = 0; j < blocks.GetLength(1); j++)
+                    if (level < 10 && IsLevelClear())
                     {
-                        if (ball.CheckCollision(blocks[i, j]))
-                        {
-                            if (blocks[i, j].GetBreakCount() == 1)
-                            {
-                                blocks[i, j].ChangeVisibility();
-                            }
-                            else
-                            {
-                                blocks[i, j].Update(blockTexture);
-                            }
+                        InitBlocks(++level);
+                        SetBlocksSprite();
 
-                            ball.ChangeDirection(new Vector2f(ball.GetDirection().X, ball.GetDirection().Y * -1));
-                        }
+                        SetNewGameStartPosition();
+
+                        levelText = new Text($"Level {level}", font);
+                    }
+
+                    if (ball.GetSpeed() == 0)
+                    {
+                        SetBallStartPosition();
+                    }
+
+                    if (Mouse.IsButtonPressed(Mouse.Button.Left)) ball.Start(5, new Vector2f(0, -1));
+
+                    ball.Move(new Vector2i(0, (int)levelText.CharacterSize), new Vector2i((int)window.Size.X, (int)window.Size.Y));
+
+                    stick.Move(window);
+
+                    if (ball.CheckCollision(stick))
+                    {
+                        float f = ((ball.sprite.Position.X + ball.sprite.Texture.Size.X * 0.5f) -
+                       (stick.sprite.Position.X + stick.sprite.Texture.Size.X * 0.5f)) / stick.sprite.Texture.Size.X;
+
+                        ball.ChangeDirection(new Vector2f(f * 2, -1));
+                    }
+
+                    InteractionWithBlocks();
+
+                    if (ball.sprite.Position.Y > 600)
+                    {
+                        lifeCount--;
+                        ball.ChangeSpeed(0);
+                        SetBallStartPosition();
                     }
                 }
 
 
-                if (ball.sprite.Position.Y > 600)
+                DrawInterface(lifeSprites, levelText, lifeCount);
+
+                DrawGameElements();
+
+                if (!IsGame(lifeCount, level))
                 {
-                    lifeCount--;
-                    ball.ChangeSpeed(0);
-                    SetBallStartPosition();
+                    DrawEndGame(lifeCount, font);
                 }
-
-                //draw
-                window.Draw(levelText);
-
-                for (int i = 0; i < lifeCount; i++)
-                {
-                    window.Draw(lifeSprites[i]);
-                }
-
-                for (int i = 0; i < blocks.GetLength(0); i++)
-                {
-                    for (int j = 0; j < blocks.GetLength(1); j++)
-                    {
-                        if (blocks[i, j].GetVisible()) window.Draw(blocks[i, j].sprite);
-                    }
-                }
-
-                window.Draw(stick.sprite);
-                window.Draw(ball.sprite);
 
                 window.Display();
             }
@@ -142,6 +115,53 @@ namespace Arcanoid
         private static void WindowClosed(object sender, EventArgs e)
         {
             window.Close();
+        }
+
+        private static void DrawInterface(Sprite[] lifeSprites, Text levelText, int lifeCount)
+        {
+            window.Draw(levelText);
+
+            for (int i = 0; i < lifeCount; i++)
+            {
+                window.Draw(lifeSprites[i]);
+            }
+        }
+
+        private static void DrawGameElements()
+        {
+            for (int i = 0; i < blocks.GetLength(0); i++)
+            {
+                for (int j = 0; j < blocks.GetLength(1); j++)
+                {
+                    if (blocks[i, j].GetVisible()) window.Draw(blocks[i, j].sprite);
+                }
+            }
+
+            window.Draw(stick.sprite);
+            window.Draw(ball.sprite);
+        }
+
+        private static void DrawEndGame(int lifeCount, Font font)
+        {
+            Text text;
+
+            if (lifeCount < 0)
+            {
+                text = new Text("YOU LOSE", font, 100);
+            }
+            else
+            {
+                text = new Text("YOU WIN!", font, 100);
+            }
+
+            text.Position = new Vector2f(200, 200);
+
+            window.Draw(text);
+
+            text = new Text("click [x] to exit",font,50);
+            text.Position = new Vector2f(270,320);
+
+            window.Draw(text);
         }
 
         private static void InitBlocks(int level = 0)
@@ -183,6 +203,43 @@ namespace Arcanoid
             }
         }
 
+        private static void InteractionWithBlocks()
+        {
+            int row = 0;
+            int col = 0;
+            while (row < blocks.GetLength(0))
+            {
+                bool isBreakBlock = false;
+
+                while (col < blocks.GetLength(1))
+                {
+                    if (ball.CheckCollision(blocks[row, col]))
+                    {
+                        if (blocks[row, col].GetBreakCount() == 1)
+                        {
+                            blocks[row, col].ChangeVisibility();
+                        }
+                        else
+                        {
+                            blocks[row, col].Update(blockTexture);
+                        }
+
+                        ball.ChangeDirection(new Vector2f(ball.GetDirection().X, ball.GetDirection().Y * -1));
+
+                        isBreakBlock = true;
+                        break;
+                    }
+
+                    col++;
+                }
+
+                if (isBreakBlock) break;
+
+                row++;
+                col = 0;
+            }
+        }
+
         private static void SetNewGameStartPosition()
         {
             stick.sprite.Position = new Vector2f(400 - stick.sprite.TextureRect.Width * 0.5f, 550);
@@ -208,6 +265,11 @@ namespace Arcanoid
             }
 
             return true;
+        }
+
+        private static bool IsGame(int lifeCount, int level)
+        {
+            return lifeCount >= 0 && (level < 10 || !IsLevelClear());
         }
     }
 }
