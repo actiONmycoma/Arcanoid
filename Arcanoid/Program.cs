@@ -63,6 +63,8 @@ namespace Arcanoid
                 if (Mouse.IsButtonPressed(Mouse.Button.Left) == true) ball.Start(5, new Vector2f(0, -1));
 
                 ball.Move(new Vector2i(0, (int)levelText.CharacterSize), new Vector2i((int)window.Size.X, (int)window.Size.Y));
+                
+                stick.Move(window);
 
                 ball.CheckCollision(stick);
 
@@ -74,15 +76,13 @@ namespace Arcanoid
                     }
                 }
 
-                stick.sprite.Position = new Vector2f(Mouse.GetPosition(window).X -
-                    stick.sprite.TextureRect.Width * 0.5f, stick.sprite.Position.Y);//на заметке
 
                 if (ball.sprite.Position.Y > 600)
                 {
                     lifeCount--;
                 }
 
-
+                //draw
                 window.Draw(levelText);
 
                 for (int i = 0; i < lifeCount; i++)
