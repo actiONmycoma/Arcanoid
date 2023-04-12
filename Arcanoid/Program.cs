@@ -92,7 +92,6 @@ namespace Arcanoid
                     if (ball.sprite.Position.Y > 600)
                     {
                         lifeCount--;
-                        ball.ChangeSpeed(0);
                         SetBallStartPosition();
                     }
                 }
@@ -252,6 +251,8 @@ namespace Arcanoid
                 ball.sprite.Texture.Size.X * 0.5f, stick.sprite.Position.Y - ball.sprite.Texture.Size.Y);
 
             ball.sprite.Position = position;
+
+            ball.ChangeSpeed(0);
         }
 
         private static bool IsLevelClear()
